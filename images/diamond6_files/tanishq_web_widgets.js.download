@@ -1,0 +1,509 @@
+(function() {
+    //set access key for api.js
+    if(window.location.host == "uat.tanishq.in"){
+        window.sessionStorage.setItem('yk', '16eafea72c7f4fb7ac8824eb7e82cdd8')
+    } else {
+      window.sessionStorage.setItem('yk', 'abb09a78fe3b45598a41f04045a1416d')
+    }
+    window.sessionStorage.setItem('ysa', 'tanishq')
+
+    if(window.location.href.indexOf('yfret_ai_demo') != -1){
+      window.localStorage.setItem('yfret_ai_demo', 1)
+    }
+
+    /* to capture search events */
+    window.addEventListener('popstate', function(){
+      window.dispatchEvent(new Event('locationchange'))
+    });
+
+    var pushState = history.pushState;
+    var replaceState = history.replaceState
+    history.pushState = function () {
+        pushState.apply(history, arguments);
+        window.dispatchEvent(new Event('locationchange'));
+    };
+
+    history.replaceState = function() {
+        replaceState.apply(history, arguments)
+        window.dispatchEvent(new Event('locationchange'));
+    }
+
+    /* Localize jQuery variable */
+    var jQuery;
+    /******** Load jQuery if not present *********/
+    if (window.jQuery === undefined) {
+        var script_tag = document.createElement('script');
+        script_tag.setAttribute("type", "text/javascript");
+        script_tag.setAttribute("src",
+            "https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js");
+        if (script_tag.readyState) {
+            script_tag.onreadystatechange = function() { /* For old versions of IE*/
+                if (this.readyState == 'complete' || this.readyState == 'loaded') {
+                    scriptLoadHandler();
+                }
+            };
+        } else { /* Other browsers*/
+            script_tag.onload = scriptLoadHandler;
+        }
+        /* Try to find the head, otherwise default to the documentElement */
+        (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
+    } else {
+        /* The jQuery version on the window is the one we want to use */
+        jQuery = window.jQuery;
+        main();
+    }
+
+    /******** Called once jQuery has loaded ******/
+    function scriptLoadHandler() {
+        /* Restore $ and window.jQuery to their previous values and store the
+         new jQuery in our local jQuery variable
+         */
+        jQuery = window.jQuery.noConflict(true);
+
+        /* Call our main function */
+        main();
+    }
+
+    function loadCSS(href) {
+      var cssLink = jQuery("<link>");
+      jQuery("head").append(cssLink); //IE hack: append before setting href
+
+      cssLink.attr({
+        rel:  "stylesheet",
+        type: "text/css",
+        href: href
+      });
+    };
+
+    function main(){
+        jQuery.ajaxSetup({
+          cache: true
+        });
+        jQuery(document).on('yfretWidgetLibraryLoaded', handleWidgets)
+        loadCSS('https://cdn.yfret.com/static/js/components/yfretWidgetLibrary.css')
+        loadCSS('https://cdn.yfret.com/static/js/components/vendor_css/tanishq_web_widgets.css')
+        jQuery.getScript('https://cdn.yfret.com/static/js/components/yfretWidgetLibraryV2.js?_=1')
+        if(window.localStorage.getItem("yfret_ai_demo")){
+          jQuery.getScript('https://api.yfret.com/static/js/components/stats_overlay_ui.js')
+        }
+    }
+
+    function handleWidgets(){
+        //-------CONFIGURE SETTINGS---------//
+
+          var brand = 'tanishq'
+          var access_key = 'abb09a78fe3b45598a41f04045a1416d'
+          var test_access_key = '16eafea72c7f4fb7ac8824eb7e82cdd8'
+          var test_page_hostname = 'uat.tanishq.in'
+          var preprod_page_hostname = 'cug.tanishq.in'
+          var slider_display_fields = ['name','price_listprice']
+          var mobile_site_hostname = ''
+
+          var wishlist_urls = {
+            'uat.titanworld.com': '/wps/proxy/https/titan-uat-wcs-web.aws-tx37.com/wcs/resources/store/10151/wishlist/getAllWishlistItems',
+            'www.cug.titanworld.com': '/wps/proxy/https/internal-titan-prod-wcs-web-elb.crown.in/wcs/resources/store/10151/wishlist/getAllWishlistItems'
+          }
+
+          //pathnames without trailing slash
+          var home_page_path = '^/(home)?$'
+          var home_page_mobile_path = '^/(home)?$'
+
+          //get product id in pdp pages//
+
+          function getProductId(){
+              try{
+                 var pid = JSON.parse(document.querySelectorAll('script[type="application/ld+json"]')[0].innerText)['sku'] || $('.sku-name').text()
+                 if(pid.length == 0){
+                    return null
+                 }
+                 if(pid.indexOf("_P")!=-1){
+                   pid = pid.split("_P")[0]
+                 }
+                 if(pid.length > 14){
+                   pid = pid.substr(0, 14)
+                 }
+                 return {'product_id' : pid}
+              } catch (e) {
+                return undefined
+              }
+              return null
+          }
+
+          //----------------------------------//
+
+          var base_url = 'https://api.yfret.com/'
+          var hostname = window.location.hostname
+
+          function loadRecommendations(widgetType, type, element, productCount, shuffle, widget_params){
+            //console.log("start");
+            var live_access_key = access_key
+            //console.log("widget: " + widget);
+            var params = {
+                "allowIncompleteBatch": false,
+                "batched": true,
+                "widgetType" : (isMobile() || isTablet())? 'infinity': 'slider',
+                "type": type,
+                "display_fields": slider_display_fields,
+                "access_key": live_access_key,
+                "viewPortCorrection":20,
+                "use_relative_urls": true,
+                "no_of_item": isMobile()? 1 : isTablet()? 2: isSmallLaptop()? 3: productCount,
+                "displayBatchSwitches": isMobile()? false: false,
+                "total_items_count": isMobile()? 16 : isTablet()? 16: isSmallLaptop()? 16: 16,
+                "imageOnHover": null,
+                //"wishlist_icon": true,
+                //"getWishlist": getWishlist,
+                "sub_account": "tanishq",
+                "openNewTab": isMobile()? false: true,
+                "image_params": '?pView=listing',
+                "shuffle": shuffle,
+                "getCurrencyFields": getCurrencyFields,
+                "fallback": widget_params['fallback'],
+                "query": widget_params['query'],
+                "header": widget_params['dynamic_header']? "dynamic": "static"
+            };
+
+            if(widgetType == 'grid'){
+              params["ctas"] = ["Add to Cart", "View Product"],
+              params["left_display_fields"] = ["name", "long_description"],
+              params["right_display_fields"] = ["price", "listprice"],
+              params["small_image_attribute"] = "small_image_link",
+              params["large_image_attribute"] = "largeimageurl"
+              params["no_of_item"] = 9
+              params["display_thumbnails"] = true
+              params["thumbnail_generator"] = function(id, url){
+                return [
+                    url.replace("large", "detail"),
+                    url.replace("large", "detail2"),
+                    url.replace("large", "detail3"),
+                    url.replace("large", "detail4")
+                ]
+              }
+            }
+            if((type.split('.')[0]=='product' || type.split('.')[1] == 'personalized_similar_products') && getProductId()){
+                 params['id'] = getProductId()['product_id']
+            }
+            if(widget_params['negative_id']){
+              params['negative_id'] = getProductId()['product_id']
+            }
+            if(window.location.hostname === mobile_site_hostname){
+              params['openNewTab'] = false
+            }
+            renderWidget(element, params)
+            // console.log("end");
+          }
+
+          function renderWidget(element, params){
+            var widget = new window.cemComponent.recommendationWidget();
+            widget.render(element,params,function(args){
+                // console.log("response");
+                console.log("params.type: " + params["type"]);
+                for (var prop in args){
+                    console.log(prop + ":" + args[prop]);
+                }
+                if (args["result"] === "success"){
+                    // console.log("success");
+                    element.getElementsByClassName('widget_header_ui')[0].style.display = "block"
+                }
+                else{
+                    if(params['fallback'] && (params['type'] != params['fallback']['base_list'] + '.' + params['fallback']['productlist'])){
+                      if(params['fallback']['header']){
+                        element.getElementsByClassName('widget_header_ui')[0].innerText = params['fallback']['header']
+                      }
+                      params['type'] = params['fallback']['base_list'] + '.' + params['fallback']['productlist']
+                      delete params['query']
+                      if(params['fallback']['base_list'] == 'product'){
+                        params['id'] = getProductId()['product_id']
+                      }
+                      renderWidget(element, params)
+                    }
+                }
+            });
+          }
+
+          function getCurrencyFields(){
+              var currencyDetails = decodeURIComponent(getCookie("currencyDetail"))
+              if(currencyDetails && (currencyDetails.indexOf('USD') != -1)){
+                return {
+                  'price': 'sale_price_usd',
+                  'listprice': 'price_usd',
+                  'currency_symbol': '$'
+                }
+              }
+              return null
+          }
+
+
+          function getWishlist(callback){
+            $.get({ 
+                'url': wishlist_urls[window.location.hostname],
+                'cache': false, 
+                'headers': {
+                  'WCToken': decodeURI(getCookie('WCToken')), 
+                  'WCTrustedToken': decodeURI(getCookie('WCTrustedToken'))} 
+                })
+            .done(
+              function(resp){
+                items = resp['GiftList']
+                if(items && items.length > 0){
+                  product_ids = items.map(function(i){ return i['partNumber']})
+                  callback(product_ids)
+                } else {
+                  callback([])
+                }
+              })
+            .fail(
+              function(resp){
+                callback([])
+              })
+          }
+
+          function isMobile(){
+            return window.innerWidth <= 500
+          }
+
+          function isTablet(){
+            return (window.innerWidth <= 768 && window.innerWidth > 500)
+          }
+
+          function isSmallLaptop(){
+            return (window.innerWidth < 1024 && window.innerWidth > 768)
+          }
+
+
+          function getParentFromCss(cssSelectors){
+            for(index=0;index<cssSelectors.length;index+=1){
+              if(jQuery(cssSelectors[index]).length>0){
+                //console.log(cssSelectors[index])
+                return jQuery(cssSelectors[index]).eq(0)
+              }
+            }
+            console.log('YFRET-ERROR parent css selector not found')
+            console.log(cssSelectors)
+          }
+
+          function checkLoadCondition(){
+            var parentCSS = jQuery('.yfretrecommendations').length > 0 || jQuery('.how-to-guide').length > 0
+            //mia products exempted
+            var isMia = (window.location.pathname.indexOf("mia") != -1) || $('.catalog-name').text().toLowerCase().indexOf('mia') != -1
+            return ((parentCSS || isMia) && getProductId())
+          }
+
+          function waitForDOMElementsLoad(cf, cb){
+            console.log('wait on product_id')
+            // activated only on product pages
+            if(window.location.pathname.indexOf('product') == -1){
+              cb()
+            } else if(cf()){
+              console.log('DOM Elements loaded')
+              cb()
+            } else {
+              window.requestAnimationFrame(function(){
+                waitForDOMElementsLoad(cf, cb)
+              })
+            }
+          }
+
+
+          function loadWidgets(settings){
+            if(!settings['active']){
+              return
+            }
+            var widgets = settings['widgets']
+            var widgetKeys = Object.keys(settings['widgets']).sort(function(a,b){
+              if(!widgets[a]['activated_on']) return 1
+              if(!widgets[b]['activated_on']) return -1
+              if(widgets[a]['activated_on'] > widgets[b]['activated_on']) return 1
+              return -1
+            })
+            //console.log(widgets)
+            var baseProductCount = Number(settings['base_product_count'])
+            widgetKeys.map(function(widgetKey){
+              var widget = widgets[widgetKey]
+              var parent = null
+              var baseList =  widget['base_list'] || 'productlist'
+              var widgetType = widget['productlist'] == "new_arrivals"? 'slider' : 'slider'
+              if(widget['css_selector'] && widget['active']){
+                parent = getParentFromCss(widget['css_selector'])
+              }
+              if(widget['active'] && parent){
+                var shuffle = widget['shuffle']? 1: 0
+                var productCount = Number(widget['product_count'])?Number(widget['product_count']):baseProductCount
+                var containerStyle = (isMobile() || isTablet())? "margin:0;": "margin:0 20px;"
+                var element = jQuery('<div id="'+widgetKey+'_widget" style="'+ containerStyle +'"><br><div class="widget_header_ui recently_viewed_text" style="display:none">'+widget["header"]+'</div><br></div>')
+                parent.before(element[0])
+                var params = {
+                  "query": widget['query'],
+                  "dynamic_header": widget['header'] == 'dynamic',
+                  "header_format": widget['header_format'],
+                  "fallback": widget['fallback'],
+                  "negative_id": widget['negative_id']? true: false,
+                  "css_selector": widget['css_selector']
+                }
+                loadRecommendations(widgetType, baseList+'.'+widget['productlist'], document.getElementById(widgetKey+'_widget'), productCount, shuffle, params)
+              }
+            })
+          }
+
+          function loadWidgetSettings(widgetType, settings_access_key, site_url_path){
+            var yfret_path = window.location.pathname
+
+            if(widgetType.indexOf('home_page_widgets')!=-1){
+              if(!(yfret_path.match(home_page_path))){
+                if(!(hostname.match(mobile_site_hostname) && yfret_path.match(home_page_mobile_path))){
+                  return
+                }
+              }
+            }
+            if(widgetType.indexOf('product_page_widgets')!=-1){
+               if(window.location.pathname.indexOf('product')==-1)
+                return
+            }
+
+            if(site_url_path){
+              if(yfret_path.indexOf(site_url_path) == -1 && yfret_path !== site_url_path && yfret_path !== site_url_path  + '/'){
+                return
+              }
+            }
+
+            if(!window.sessionStorage[widgetType]){
+              jQuery.ajax({
+                url : base_url+'settings/?type='+widgetType+'&access_key='+settings_access_key
+              })
+              .done(function(resp){
+                if(!resp['error']){
+                  window.sessionStorage[widgetType] = JSON.stringify(resp)
+                  waitForDOMElementsLoad(checkLoadCondition,function() {
+                    loadWidgets(resp)
+                  })
+                }
+              })
+              .fail(function(){
+                console.log(widgetType,'YFRET-ERROR settings call failed')
+              })
+            } else {
+              waitForDOMElementsLoad(checkLoadCondition, function() {
+                loadWidgets(JSON.parse(window.sessionStorage[widgetType]))
+              })
+            }
+          }
+
+          function processStr(str){
+            return str.trim().toLowerCase().replace(/[^a-z0-9]/g,"_")
+          }
+
+          function fireSearchEvent(){
+            if(location.href.indexOf('shop') != -1){
+              search = {}
+              var searchStr = location.href.split('/')[5]
+              var collectionName = location.pathname.split('/')[2]
+              if(collectionName && collectionName.length > 0){
+                collectionName = processStr(collectionName)
+                search['query'] = collectionName
+              }
+              if(searchStr && searchStr.length > 0){
+                if(searchStr.indexOf('?') != -1){
+                  searchStr = searchStr.substr(0, searchStr.indexOf('?'))
+                }
+                var searchItems = searchStr.split('&')
+                for(var i=0; i < searchItems.length; i++){
+                  var searchItem = searchItems[i]
+                  var attrAndValue = searchItem.split('=')
+                  var attrName = attrAndValue[0]
+                  var attrValue = attrAndValue[1]
+                  console.log(attrValue)
+                  attrName = processStr(attrName)
+                  if (attrValue.indexOf('+')!=-1){
+                    var attrValues = attrValue.split('+')
+                    console.log(attrValues)
+                    var processedValues = []
+                    for(var j=0; j < attrValues.length; j++){
+                      processedValues.push(processStr(attrValues[j]))
+                    }
+                  } else {
+                    var processedValues = processStr(attrValue)
+                  }
+                  search[attrName] = processedValues
+                }
+              }
+              console.log(search)
+              if(Object.keys(search).length > 0){
+                console.log("search event fired")
+                cemantika.ecommerce.searchProduct({}, search, true)
+              }
+            }
+          }
+
+          function clearAndUpdateSessionStorage(){
+            if(window.sessionStorage.getItem(widget_basekey)){
+                let web_widgets = window.sessionStorage.getItem(widget_basekey).split(",")
+                for(index in web_widgets){
+                  window.sessionStorage.removeItem(web_widgets[index])
+                }
+                window.sessionStorage.removeItem(widget_basekey)
+                console.log('session Cleared')
+                updateWidgetExpiryTime()
+            }
+          }
+          function updateWidgetExpiryTime(){
+            let expiry_time = new Date().getTime() + (4*3600*1000)
+            window.sessionStorage.setItem('widget_expiry_time',expiry_time)
+          }
+          function updateSessionCache(widget_basekey){
+            if(sessionStorage.getItem('widget_expiry_time') && (sessionStorage.getItem('widget_expiry_time') < (new Date().getTime())) && window.sessionStorage.getItem(widget_basekey)){
+              clearAndUpdateSessionStorage(widget_basekey)
+            }else if(!sessionStorage.getItem('widget_expiry_time') && window.sessionStorage.getItem(widget_basekey)){
+              clearAndUpdateSessionStorage(widget_basekey)
+            }
+          }
+
+          settings_access_key = access_key
+          if(window.location.hostname.match(test_page_hostname)|| 
+            window.location.hostname.match(preprod_page_hostname)){
+            settings_access_key = test_access_key
+          }
+          var widget_basekey = 'web_widgets'
+          if(true || window.localStorage.getItem('yfret_ai_demo')){
+            widget_basekey = 'personalized_web_widgets'
+          }
+          updateSessionCache(widget_basekey)
+          if(window.sessionStorage[widget_basekey]){
+                  window.sessionStorage[widget_basekey].split(',').map(function(widgetType){
+                      if(widgetType.indexOf(brand)!=-1){
+                          loadWidgetSettings(widgetType.split('::')[0], settings_access_key, widgetType.split('::')[1])
+                      }
+                  })
+            }
+            else{
+                  jQuery.ajax({
+                    url : base_url+'settings/?type='+widget_basekey+'&access_key='+settings_access_key
+                  })
+                  .done(function(resp){
+                    console.log(resp)
+                    if(!resp['error']){
+                      window.sessionStorage[widget_basekey] = resp['types']
+                      resp['types'].map(function(widgetType){
+                        if(widgetType.indexOf(brand)!=-1){
+                            loadWidgetSettings(widgetType.split('::')[0], settings_access_key, widgetType.split('::')[1])
+                        }
+                      })
+                    } else {
+                      console.log('YFRET-ERROR widget settings call failed')
+                    }
+                  })
+                  .fail(function(){
+                    console.log('YFRET-ERROR widget settings call failed')
+                  })
+            }
+
+            // Firing search events
+            fireSearchEvent()
+            window.addEventListener('locationchange', function(){
+              fireSearchEvent()
+            })
+    }
+
+})();
+
+
+

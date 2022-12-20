@@ -1,0 +1,30 @@
+.widget_header_ui{
+	text-align: center;
+	font-size: 26px;
+}
+
+@media (max-width: 767px){
+	.widget_header_ui{
+	font-size: 15px!important;
+		font-weight: bold!important;
+	}
+
+	.infinityItemContent[data-display-fields="price_listprice"]{
+		height: 2.2em;
+	}
+}
+.listPriceContainer .listPriceConnector,.listPriceContainer .discountComma,.listPriceContainer .discountPercent{
+	display: none !important;
+}
+
+/* Only show characters to fit 250px */
+.boldContentItem.contentItem {
+	/* width: 250px; */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.imageSliderItemContentContainer .imageSliderItemContent:first-child{
+	height: 2em!important; /* Reduced from 4em per Tanishq request*/
+}

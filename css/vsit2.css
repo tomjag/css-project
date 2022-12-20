@@ -1,0 +1,540 @@
+*{
+	box-sizing: border-box;
+	font-family: mangal;
+	margin: 0px;
+	padding: 0px;
+}
+
+/*div
+{
+	border: 1px solid red;
+
+}*/
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+[class*="col-"] {
+  float: left;
+  padding: 15px;
+}
+
+.center
+{
+	display: flex;
+	justify-content: center;
+
+}
+
+
+/************************************HEADER START******************************************/
+.header
+{
+	width: 100%;
+	position: fixed;
+	background-color: #00bfff;
+	margin: 0px;
+	padding: 15px;
+
+}
+
+.header.active
+{
+	background-color: black;
+}
+
+.logo
+{
+	width: 20%;
+	float: left;
+}
+
+.nav
+{
+	width: 80%;
+	float: left;
+
+	
+}
+
+.nav ul
+{
+	list-style: : none;
+	margin: 0px;
+	padding: 0px;
+}
+
+.nav li{
+	float: left;
+	display: inline;
+
+}
+
+.nav li a 
+{
+	display: block;
+	color: white;
+	padding:15px;
+	text-decoration: none;
+}
+
+.nav li:hover
+{
+	background-color: lightblue;
+	color:  #00bfff;
+
+}
+
+/************************************HEADER END******************************************/
+
+
+/************************************BANNER-1 START******************************************/
+
+.banner1
+{
+	width: 100%;
+    height: 800px;
+	background: linear-gradient( to right, rgba(8,0,0,0.9),rgba(8,0,0,0.9),rgba(8,0,0,0.9)), url(../vsit/b1.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position:  center; 
+	margin: 0px;
+	
+	
+}
+
+.text
+{
+	width: 100%;
+	color: white;
+	font-size: 20px;
+	align-content: center;
+	text-align: center;
+	padding-top: 300px;
+
+}
+
+/************************************BANNER-1 END******************************************/
+
+/************************************COURSES START******************************************/
+
+.text2
+{
+	width: 100%;
+	height: 150px;
+	align-content: center;
+	text-align: center;
+	color: black;
+	padding: 20px;	
+}
+
+.text2 a
+{
+	display: block;
+	color:black;
+	display: inline;
+	text-decoration: none;
+	padding: 5px;
+}
+
+.text2 a:hover
+{
+	background-color: grey;
+
+}
+
+.courses img
+{
+	width: 100%;
+	height: 100%;
+}
+
+
+
+/************************************COURSES END******************************************/
+
+
+/************************************BANNER2 START******************************************/
+
+.banner2
+{
+	width: 100%;
+	height: 500px;
+	background-color: rgba(8,0,0,0.9);
+}
+
+.image
+{
+   height: 500px;
+}
+.image img 
+{
+	width: 400px;
+	height: 480px;
+	float: right;
+}
+.box
+{
+	height: 330px;
+	background-color: rgb(19,134,153);
+	float: right;
+	margin-top: 100px;
+	color: white;
+	line-height: 40px;
+	padding-left: 30px;
+}
+
+/************************************BANNER2 END******************************************/
+
+
+/************************************TEXT3 START******************************************/
+
+
+.text3
+{
+	text-align: center;
+	padding-top: 40px;
+	width: 80%;
+	margin: auto;
+}
+
+
+
+/************************************TEXT3 END******************************************/
+
+
+/************************************BANNER3 START******************************************/
+
+.banner3
+{
+	width: 100%;
+	height: 350px ;
+	background: linear-gradient(rgba(8,0,0,0.8), rgba(8,0,0,0.8)), url(../vsit/b2.jpg);
+	background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: center;
+	
+}
+
+
+.colm
+{
+	
+	height: 250px;
+	float: left;
+	text-align: center;
+	font-size: 20px;
+	padding-top: 45px;
+	background-color: rgb(19,134,153);
+	margin-top: 50px;
+}
+
+
+/************************************BANNER3 END******************************************/
+
+
+/************************************TEXT3 START******************************************/
+
+.social
+{
+	width: 100%;
+
+}
+
+.col3
+{
+	float: left;
+	text-align: center;
+	padding-top: 50px;
+}
+
+/************************************TEXT3 END******************************************/
+
+
+/************************************BANNER3 START******************************************/
+
+.banner4
+{
+	width: 100%;
+	background-color: rgba(8,0,0,0.9);
+}
+
+.box2
+{
+	height: 250px;
+	width: 70%;
+	margin: auto;
+	color: #00bfff;
+	text-align: center;
+	padding-top: 50px;
+	
+}
+.banner4 h4
+{
+	color: white;
+}
+
+
+
+/************************************BANNER3 END******************************************/
+
+
+/************************************FORMS START******************************************/
+
+.forms{
+	width: 100%;
+	padding-top: 50px;
+	text-align: center;
+
+}
+
+.colm1
+{
+	float: left;
+	padding: 35px;
+
+}
+.colm1 input
+{
+ width: 550px;
+margin-top: 25px;
+padding: 15px;
+}
+
+.colm1 textarea
+{
+	width: 550px;
+	margin-top:  25px;
+	padding: 15px;
+}
+
+.colm2
+{
+	float: right;
+	text-align: left; 	
+}
+
+/************************************FORMS END******************************************/
+
+/************************************FOOTER START******************************************/
+
+.footer{
+	width: 100%;
+	height: 500px;
+	background-color: black;
+}
+
+.colm3
+{
+	float: left;
+	margin-top: 60px;
+	color: white;
+	padding-left: 20px;
+	padding-top: 30px;
+	margin-left: 20px;
+
+}
+
+.colm3 a
+{
+	color: #00bfff;
+	text-decoration: none;
+}
+
+.colm3 img
+{
+	padding-left: 10px;
+	
+}
+
+.colm3 p
+{
+	text-align: center;
+
+}
+
+/************************************FOOTER END******************************************/
+
+
+
+
+
+
+
+
+/* For mobile phones: */
+[class*="col-"] {
+  width: 100%;
+}
+
+@media only screen and (min-width: 600px) {
+  /* For tablets: */
+  .col-s-1 {width: 8.33%;}
+  .col-s-2 {width: 16.66%;}
+  .col-s-3 {width: 25%;}
+  .col-s-4 {width: 33.33%;}
+  .col-s-5 {width: 41.66%;}
+  .col-s-6 {width: 50%;}
+  .col-s-7 {width: 58.33%;}
+  .col-s-8 {width: 66.66%;}
+  .col-s-9 {width: 75%;}
+  .col-s-10 {width: 83.33%;}
+  .col-s-11 {width: 91.66%;}
+  .col-s-12 {width: 100%;}
+}
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .col-1 {width: 8.33%;}
+  .col-2 {width: 16.66%;}
+  .col-3 {width: 25%;}
+  .col-4 {width: 33.33%;}
+  .col-5 {width: 41.66%;}
+  .col-6 {width: 50%;}
+  .col-7 {width: 58.33%;}
+  .col-8 {width: 66.66%;}
+  .col-9 {width: 75%;}
+  .col-10 {width: 83.33%;}
+  .col-11 {width: 91.66%;}
+  .col-12 {width: 100%;}
+}
+
+
+
+@media only screen and (max-width: 768px) {
+	.nav
+	{
+		font-size: 10px;
+	}
+
+	.text
+	{
+		width: 100%;	
+	}
+
+	.image img
+	{
+		justify-content: center;
+	}
+
+	.box
+	{
+		margin: 0px;
+
+	}
+
+	.text3
+	{
+		width: 100%;
+	}
+
+	.banner3
+	{
+		height: 500px;
+	}
+
+	.colm
+	{
+		margin-top: 0px;
+	}
+
+	.col3 iframe
+	{
+		width: 300px;
+	}
+
+	.box2
+	{
+		/*height: 400px;*/
+		padding-top: 0px;
+	}
+
+	.colm1
+{
+	
+	padding: 0px;
+
+}
+
+	.colm1 input
+{
+ width: 70%;
+margin-top: 25px;
+padding: 0px;
+
+}
+
+.colm1 textarea
+{
+	width:70%;
+	margin-top:  25px;
+	padding: 0px;
+
+}
+
+.footer
+{
+	height: 1000px;
+}
+
+.colm3
+{
+	
+	margin: 0px;
+	padding-left: 50px; 	
+}
+
+
+
+@media only screen and (max-width: 900px) {
+
+.colm1 input
+{
+ width: 450px;
+margin-top: 25px;
+padding: 15px;
+
+}
+
+.colm1 textarea
+{
+	width: 450px;
+	margin-top:  25px;
+	padding: 15px;
+
+}
+
+}
+
+
+
+@media only screen and (max-width: 500px) {
+
+.col3 iframe
+	{
+		width: 100%;
+	}
+
+
+
+.colm1 input
+{
+ width: 100%;
+margin-top: 25px;
+padding: 15px;
+
+}
+
+.colm1 textarea
+{
+	width: 100%;
+	margin-top:  25px;
+	padding: 15px;
+
+}
+
+
+}
+
